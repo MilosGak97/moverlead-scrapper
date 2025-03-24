@@ -10,8 +10,8 @@ async function bootstrap() {
   const appService = app.get(AppService);
 
   try {
-    // Run your task
-    await appService.runTask();
+    // Run your taskstartedScrapperDynamo
+    await appService.runScrapper()
     console.log('Task completed successfully.');
   } catch (error) {
     console.error('Task failed:', error);
@@ -20,4 +20,5 @@ async function bootstrap() {
     await app.close();
   }
 }
+
 bootstrap();
