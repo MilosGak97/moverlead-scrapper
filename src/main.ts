@@ -1,17 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { AppService } from './app.service';
+import { ScrapperService } from './scrapper.service';
+import { ScrapperFailedService } from './scrapper-failed.service';
 
 async function bootstrap() {
   // Create an application context (no HTTP server needed)
   const app = await NestFactory.createApplicationContext(AppModule);
 
   // Get the service that contains your background task logic
-  const appService = app.get(AppService);
+  const scrapper = app.get(ScrapperService);
+  const scrapperFailed = app.get(ScrapperFailedService)
 
   try {
     // Run your taskstartedScrapperDynamo
-    await appService.runScrapper()
+    await scrapper.runScrapper()
     console.log('Task completed successfully.');
   } catch (error) {
     console.error('Task failed:', error);
