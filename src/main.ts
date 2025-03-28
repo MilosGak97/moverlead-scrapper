@@ -12,7 +12,6 @@ async function bootstrap() {
   const scrapperFailed = app.get(ScrapperFailedService)
 
   try {
-    // Run your taskstartedScrapperDynamo
     await scrapper.runScrapper()
     console.log('Task completed successfully.');
   } catch (error) {

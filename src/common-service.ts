@@ -36,7 +36,8 @@ export class CommonService {
       );
 
       // await this.updateAttemptCount(key);
-      console.log('Error has been noted in DynamoDB:', response.data);
+      console.log(`⬆️  + ❌ : Error has been written to ${response.data}`);
+      return `Error has been written to ${response.data}`;
       // Process the response data as needed
     } catch (error: any) {
       console.error('Error starting scrapper:', error);
@@ -44,17 +45,18 @@ export class CommonService {
     }
   }
 
-  async successfulScrapper(key: string): Promise<string> {
+  async successfulScrapper(key: string, numberOfResults: number): Promise<string> {
     // Build the URL using the dynamic key parameter
-    const url = `https://api.moverlead.com/api/aws/successful-scrapper/${key}`;
+    const url = `https://api.moverlead.com/api/aws/successful-scrapper`;
 
+    const payload = { key, numberOfResults }
     try {
       // Send a POST request with no request body and accept all responses
-      const response = await axios.post(url, '', {
+      const response = await axios.post(url, payload, {
         headers: { accept: '*/*' },
       });
 
-      console.log('Attempt count updated successfully:', response.data);
+      console.log(`✅ : Scrapper for ${response.data} was successful`)
       return response.data;
     } catch (error: any) {
       console.error('Error updating attempt count:', error);
@@ -72,7 +74,8 @@ export class CommonService {
         headers: { accept: '*/*' },
       });
 
-      console.log('Attempt count updated successfully:', response.data);
+      
+      console.log(`❌ : Scrapper for ${response.data} has failed!`)
       return response.data;
     } catch (error: any) {
       console.error('Error updating attempt count:', error);
@@ -200,7 +203,7 @@ export class CommonService {
           axiosConfig,
         ),
       );
-      console.log('Results uploaded successfully:', response.data);
+      console.log(`⬆️  + ✅: Results has been written to ${response.data}`);
       return response.data;
     } catch (error: any) {
       console.error('Error uploading results:', error);

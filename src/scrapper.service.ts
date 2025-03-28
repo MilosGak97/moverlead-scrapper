@@ -58,8 +58,9 @@ export class ScrapperService {
     try {
       // Build the BrightData proxy URL using the provided details.
       // Using the format: username:password@host:port
+      //const proxyUrl = 'http://brd-customer-hl_104fb85c-zone-datacenter_proxy1:6yt7rqg6ryxk@brd.superproxy.io:33335';
       const proxyUrl =
-        'http://brd-customer-hl_104fb85c-zone-datacenter_proxy1:6yt7rqg6ryxk@brd.superproxy.io:33335';
+        'http://brd-customer-hl_104fb85c-zone-residential_proxy1:qf2a0h0fhx4d@brd.superproxy.io:33335';
 
       // Create the proxy agent.
       const proxyAgent = new HttpsProxyAgent(proxyUrl);
@@ -84,8 +85,7 @@ export class ScrapperService {
       const results = response.data?.cat1?.searchResults?.mapResults;
 
       await this.commonService.uploadResults(results, countyId, key);
-      await this.commonService.successfulScrapper(key);
-      console.log(`Successful scrapper for: ${key}`);
+      await this.commonService.successfulScrapper(key, results.length);
 
       // Process the results as needed
     } catch (error) {
@@ -117,7 +117,6 @@ export class ScrapperService {
 
     // Optionally, upload the results using your S3 service (using the countyId for reference)
     // await this.s3service.uploadResults(results, countyId);
-    console.log(`Processed countyId: ${countyId}`);
   }
 
   private async startedScrapperDynamo(
@@ -147,7 +146,10 @@ export class ScrapperService {
         ),
       );
 
-      console.log('Scrapper started successfully:', response.data);
+      console.log(
+        '🧊: Scrapper started and saved in DynamoDB for ',
+        response.data,
+      );
       // Process the response data as needed
     } catch (error: any) {
       console.error('Error starting scrapper:', error);
@@ -155,7 +157,6 @@ export class ScrapperService {
     }
   }
 
-  
   private async generateRandomKey(length: number = 10): Promise<string> {
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -15,7 +15,7 @@ export class ScrapperFailedService {
   ) {}
 
   // RUN SCRAPPER FOR FAILED ONES
-  async runScrapperFailed() {
+  async runScrapper() {
     // Retrieve the array of ZillowData objects (each containing a countyId and a zillowLink)
     const zillowData: GetFailedScrapperDto[] = await this.getFailedScrapper();
 
@@ -41,8 +41,9 @@ export class ScrapperFailedService {
     try {
       // Build the BrightData proxy URL using the provided details.
       // Using the format: username:password@host:port
+      //const proxyUrl = 'http://brd-customer-hl_104fb85c-zone-datacenter_proxy1:6yt7rqg6ryxk@brd.superproxy.io:33335';
       const proxyUrl =
-        'http://brd-customer-hl_104fb85c-zone-datacenter_proxy1:6yt7rqg6ryxk@brd.superproxy.io:33335';
+        'http://brd-customer-hl_104fb85c-zone-residential_proxy1:qf2a0h0fhx4d@brd.superproxy.io:33335';
 
       // Create the proxy agent.
       const proxyAgent = new HttpsProxyAgent(proxyUrl);
@@ -66,9 +67,8 @@ export class ScrapperFailedService {
 
       const results = response.data?.cat1?.searchResults?.mapResults;
 
+      await this.commonService.successfulScrapper(key, results.length);
       await this.commonService.uploadResults(results, countyId, key);
-      await this.commonService.successfulScrapper(key);
-      console.log(`Successful scrapper for: ${key}`);
 
       // Process the results as needed
     } catch (error) {
@@ -100,7 +100,7 @@ export class ScrapperFailedService {
 
     // Optionally, upload the results using your S3 service (using the countyId for reference)
     // await this.s3service.uploadResults(results, countyId);
-    console.log(`Processed countyId: ${countyId}`);
+    //console.log(`Processed countyId: ${countyId}`);
   }
 
   private async updateAttemptCount(key: string): Promise<string> {
@@ -113,7 +113,10 @@ export class ScrapperFailedService {
         headers: { accept: '*/*' },
       });
 
-      console.log('Attempt count updated successfully:', response.data);
+      console.log(
+        '🧊 : Count attempt has been updated in DynamoDB for ',
+        response.data,
+      );
       return response.data;
     } catch (error: any) {
       console.error('Error updating attempt count:', error);
@@ -122,9 +125,9 @@ export class ScrapperFailedService {
   }
 
   async getFailedScrapper() {
-    const url = 'https://api.moverlead.com/api/aws/check-failed-scrapper';
+    const url = 'https://api.moverlead.com/api/snapshots/failed';
     try {
-      const response = await axios.post(url, '', {
+      const response = await axios.get(url, {
         headers: { accept: '*/*' },
       });
       console.log('Check failed scrapper response:', response.data);
